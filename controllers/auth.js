@@ -1,8 +1,29 @@
+const User = require("../models/User");
+const { StatusCodes } = require("http-status-codes");
+const { BadRequestError, UnauthenticatedError } = require("../errors");
+
 const register = async (req, res) => {
-  res.send("register");
+  const user = await User.create(req.body);
+  const token = user.createJWT();
+  res.status(StatusCodes.CREATED).json({ user: { name: user.name }, token });
 };
 const login = async (req, res) => {
-  res.send("login");
+  const { email, password } = req.body;
+  if (!email || !password) {
+    throw new BadRequestError("please provide missing email &/ password");
+  }
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new UnauthenticatedError("No user with that credentials");
+  }
+
+  if (!(await user.comparePassword(password))) {
+    throw new UnauthenticatedError("email or password doesnot match");
+  }
+
+  const token = user.createJWT();
+
+  res.status(StatusCodes.OK).json({ user: { name: user.name }, token });
 };
 
 module.exports = {
