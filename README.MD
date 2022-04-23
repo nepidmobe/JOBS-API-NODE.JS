@@ -44,9 +44,11 @@ Email Validation Regex
 
 #### Mongoose Errors
 
-- Validation Errors
+-mongoose error are not user friendly so lets twick error handlers making more files
+
+- Validation Errors(if user doesn't provide reqired values)
 - Duplicate (Email)
-- Cast Error
+- Cast Error(id doesn't match exactly what mongoose looking for)
 
 #### Security
 

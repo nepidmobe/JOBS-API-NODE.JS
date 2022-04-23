@@ -1,5 +1,11 @@
 require("dotenv").config();
 require("express-async-errors");
+//extra security packages
+const helmet = require("helmet");
+const cors = require("cors");
+const xss = require("xss-clean");
+const rateLimiter = require("express-rate-limit");
+
 const express = require("express");
 const app = express();
 
@@ -17,7 +23,19 @@ const authenticateUser = require("./middleware/authentication");
 const notFoundMiddleware = require("./middleware/not-found");
 const errorHandlerMiddleware = require("./middleware/error-handler");
 
+app.set("trust proxy", 1); //since we are using proxy heroku
+
+app.use(
+  rateLimiter({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10,
+  })
+);
 app.use(express.json());
+app.use(helmet());
+app.use(xss());
+app.use(cors());
+
 // extra packages
 
 //routes
